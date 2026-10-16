@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camera Website</title>
+</head>
+<body style="font-family:Arial;text-align:center;padding:20px">
+<h2>Camera Website</h2>
+<p>Allow camera access to take your photo.</p>
+
+<video id="video" autoplay playsinline
+style="width:100%;max-width:400px"></video>
+
+<br><br>
+<button onclick="startCamera()">Open Camera</button>
+<button onclick="takePhoto()">Take Photo</button>
+
+<br><br>
+<canvas id="canvas" style="width:100%;max-width:400px"></canvas>
+<br>
+<a id="download" style="display:none">Download Photo</a>
+
+<script>
+let stream;
+
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" }
+    });
+    document.getElementById("video").srcObject = stream;
+  } catch (e) {
+    alert("Please allow camera access.");
+  }
+}
+
+function takePhoto() {
+  if (!stream) {
+    alert("Open Camera first.");
+    return;
+  }
+
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0);
+
+  const link = document.getElementById("download");
+  link.href = canvas.toDataURL("image/png");
+  link.download = "my-photo.png";
+  link.textContent = "Download Photo";
+  link.style.display = "inline";
+}
+</script>
+</body>
+</html>
